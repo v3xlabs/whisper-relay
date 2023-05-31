@@ -1,6 +1,7 @@
 use std::{
+    io::Read,
     net::{TcpListener, TcpStream},
-    thread, io::{Read, Write},
+    thread,
 };
 
 fn main() {
