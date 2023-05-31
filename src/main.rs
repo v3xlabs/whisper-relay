@@ -47,11 +47,11 @@ fn handle_client(mut stream: TcpStream) {
                     prev_n = n;
                 } else if prev_buffer[0] == 0x1b {
                     let message = String::from_utf8_lossy(&prev_buffer[111..prev_n]);
-                    println!("Received message: {}", message);
+                    print!("{}", message);
                     // Do whatever you want with the received message
                 } else if prev_buffer[0] != 0x0 {
                     let message = String::from_utf8_lossy(&prev_buffer[0..prev_n]);
-                    println!("Received message: {}", message);
+                    print!("{}", message);
                     // Do whatever you want with the received message
                 }
             }
