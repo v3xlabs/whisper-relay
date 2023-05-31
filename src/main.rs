@@ -34,9 +34,11 @@ fn handle_client(mut stream: TcpStream) {
                 break;
             }
             Ok(n) => {
-                let message = String::from_utf8_lossy(&buffer[..n]);
-                println!("Received message: {}", message);
-                // Do whatever you want with the received message
+                if buffer[n - 1] == 10 {
+                    let message = String::from_utf8_lossy(&buffer[111..n]);
+                    println!("Received message: {}", message);
+                    // Do whatever you want with the received message
+                }
             }
             Err(err) => {
                 eprintln!("Error reading from socket: {}", err);
