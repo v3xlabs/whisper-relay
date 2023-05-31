@@ -1,3 +1,5 @@
+use std::io::{self, Write};
+
 use std::{
     io::Read,
     net::{TcpListener, TcpStream},
@@ -54,6 +56,8 @@ fn handle_client(mut stream: TcpStream) {
                     print!("{}", message);
                     // Do whatever you want with the received message
                 }
+
+                io::stdout().flush().unwrap();
             }
             Err(err) => {
                 eprintln!("Error reading from socket: {}", err);
