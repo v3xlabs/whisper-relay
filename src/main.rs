@@ -25,17 +25,32 @@ fn main() {
 }
 
 fn handle_client(mut stream: TcpStream) {
-    let mut buffer = [0; 1024];
+    let mut buffer_a: [u8; 1024] = [0; 1024];
+    let mut buffer_b: [u8; 1024] = [0; 1024];
+
+    let mut buffer: &mut [u8; 1024] = &mut buffer_a;
+    let mut prev_buffer: &mut [u8; 1024] = &mut buffer_b;
+
+    let mut prev_n: usize = 0;
 
     loop {
-        match stream.read(&mut buffer) {
+        match stream.read(buffer) {
             Ok(0) => {
                 // Connection closed by the client
                 break;
             }
             Ok(n) => {
-                if buffer[n - 1] == 10 {
-                    let message = String::from_utf8_lossy(&buffer[111..n]);
+                if buffer[0] == 0x1b {
+                    let tmp_buffer = buffer;
+                    buffer = prev_buffer;
+                    prev_buffer = tmp_buffer;
+                    prev_n = n;
+                } else if prev_buffer[0] == 0x1b {
+                    let message = String::from_utf8_lossy(&prev_buffer[111..prev_n]);
+                    println!("Received message: {}", message);
+                    // Do whatever you want with the received message
+                } else if prev_buffer[0] != 0x0 {
+                    let message = String::from_utf8_lossy(&prev_buffer[0..prev_n]);
                     println!("Received message: {}", message);
                     // Do whatever you want with the received message
                 }
