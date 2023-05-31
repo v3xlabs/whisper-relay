@@ -34,6 +34,7 @@ fn handle_client(mut stream: TcpStream) {
     let mut prev_buffer: &mut [u8; 1024] = &mut buffer_b;
 
     let mut prev_n: usize = 0;
+    let mut print_index: usize = 0;
 
     loop {
         match stream.read(buffer) {
@@ -43,18 +44,38 @@ fn handle_client(mut stream: TcpStream) {
             }
             Ok(n) => {
                 if buffer[0] == 0x1b {
+                    let print_limit = n - 12;
+
+                    if print_index == 0 {
+                        print_index = 111;
+                    }
+
+                    if print_limit > print_index {
+                        let message = String::from_utf8_lossy(&buffer[print_index..print_limit]);
+
+                        print!("{}", message);
+
+                        print_index = print_limit;
+                    }
+
                     let tmp_buffer = buffer;
                     buffer = prev_buffer;
                     prev_buffer = tmp_buffer;
                     prev_n = n;
                 } else if prev_buffer[0] == 0x1b {
-                    let message = String::from_utf8_lossy(&prev_buffer[111..prev_n]);
-                    print!("{}", message);
+                    if print_index == 0 {
+                        print_index = 111;
+                    }
+
+                    let message = String::from_utf8_lossy(&prev_buffer[print_index..prev_n]);
+                    println!("{}", message);
                     // Do whatever you want with the received message
+                    print_index = 0;
                 } else if prev_buffer[0] != 0x0 {
-                    let message = String::from_utf8_lossy(&prev_buffer[0..prev_n]);
-                    print!("{}", message);
+                    let message = String::from_utf8_lossy(&prev_buffer[print_index..prev_n]);
+                    println!("{}", message);
                     // Do whatever you want with the received message
+                    print_index = 0;
                 }
 
                 io::stdout().flush().unwrap();
