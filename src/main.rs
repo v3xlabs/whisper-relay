@@ -44,7 +44,7 @@ fn handle_client(mut stream: TcpStream) {
             }
             Ok(n) => {
                 if buffer[0] == 0x1b {
-                    let print_limit = n - 12;
+                    let print_limit = n - 24;
 
                     if print_index == 0 {
                         print_index = 111;
